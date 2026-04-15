@@ -10,6 +10,10 @@ public class EnemyTwo : MonoBehaviour
     public GameObject explosionPrefab;
     private GameManager gameManager;
 
+    void Start()
+    {
+        startPos = transform.position; // <-- FIX
+    }
     void Update()
     {
         float x = Mathf.Sin(Time.time * frequency) * magnitude;

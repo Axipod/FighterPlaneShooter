@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
         CreateSky();
 
         InvokeRepeating("CreateEnemyOne", 1, 2);
-        InvokeRepeating("CreateEnemyTwo", 1, 2);
+        InvokeRepeating("CreateEnemyTwo", 1.5f, 3);
     }
 
     void CreateSky()
