@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
     }
     void CreateEnemyTwo()
     {
-        float randomX = Random.Range(-8f, 8f);
+      /*  float randomX = Random.Range(-8f, 8f);
 
         GameObject enemyToSpawn;
 
@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
             enemyToSpawn = enemyTwoPrefab; 
         else
             enemyToSpawn = enemyOnePrefab;
-
+      */
         Instantiate(enemyTwoPrefab, new Vector3(Random.Range(-horizontalScreenSize, horizontalScreenSize) * .9f, verticalScreenSize, 0), Quaternion.identity);
 
     }
