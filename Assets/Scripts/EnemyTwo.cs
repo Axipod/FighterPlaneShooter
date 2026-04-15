@@ -12,7 +12,8 @@ public class EnemyTwo : MonoBehaviour
 
     void Start()
     {
-        startPos = transform.position; // <-- FIX
+        //Random position spawner
+        startPos = transform.position; 
     }
     void Update()
     {
