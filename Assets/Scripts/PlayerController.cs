@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
 public class PlayerController : MonoBehaviour
@@ -23,6 +24,15 @@ public class PlayerController : MonoBehaviour
     private float minY;
     private float maxY;
 
+    private float speed;
+    public GameObject thruster;
+        
+    public GameObject shield;
+    public bool shieldActive;
+    public int weaponType;
+
+    
+
     public GameObject bulletPrefab;
     void Start()
     {
@@ -42,22 +52,111 @@ public class PlayerController : MonoBehaviour
     }
     public void LoseALife()
     {
+        if (shieldActive)
+        {
+            shield.SetActive(false);
+            shieldActive = false;
+            Debug.Log("Shield absorbed the hit.");
+            return; // Exit early, no lives lost
+        }
         lives--;
         gameManager.ChangeLivesText(lives);
-        if (lives == 0)
+        if (lives <= 0)
         {
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            gameManager.GameOver();
             Destroy(this.gameObject);
+     
+            }
+    }
+    IEnumerator ShieldPowerDown()
+    {
+        yield return new WaitForSeconds(3f);
+        shield.SetActive(false);
+        shieldActive = false;
+        gameManager.PlaySound(2);
+        gameManager.ManagePowerupText(5);
+    }
+    IEnumerator SpeedPowerDown()
+    {
+        yield return new WaitForSeconds(3f);
+        speed = 5f;
+        thruster.SetActive(false);
+        gameManager.PlaySound(2);
+        gameManager.ManagePowerupText(5);
+    }
+    IEnumerator WeaponPowerDown()
+    {
+        yield return new WaitForSeconds(3f);
+        weaponType = 1;
+        gameManager.PlaySound(2);
+        gameManager.ManagePowerupText(5);
+    }
+
+    private void OnTriggerEnter2D(Collider2D whatDidIHit)
+    {
+        if (whatDidIHit.tag == "Powerup")
+        {
+            Destroy(whatDidIHit.gameObject);
+            int whichPowerup = Random.Range(1, 5);
+            gameManager.PlaySound(1);
+
+            switch (whichPowerup)
+            {
+                case 1:
+                    speed = 10f;
+
+                    thruster.SetActive(true);
+                    gameManager.ManagePowerupText(1);
+                    StartCoroutine(SpeedPowerDown());
+                    break;
+                case 2:
+                    weaponType = 2;
+                    StartCoroutine(WeaponPowerDown());
+                    gameManager.ManagePowerupText(2);
+                    break;
+                case 3:
+                    weaponType = 3;
+                    StartCoroutine(WeaponPowerDown());
+                    gameManager.ManagePowerupText(3);
+                    break;
+                case 4:
+
+                    shield.SetActive(true);
+                    shieldActive = true;
+                    gameManager.ManagePowerupText(4);
+                    StartCoroutine(ShieldPowerDown());
+                    break;
+            }
+        
+
         }
     }
+
+
+
     void Shooting()
     {
-        //if the player presses the SPACE key, create a projectile
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Instantiate(bulletPrefab, transform.position + new Vector3(0, 1, 0), Quaternion.identity);
+            switch (weaponType)
+            {
+                case 1:
+                    Instantiate(bulletPrefab, transform.position + new Vector3(0, 0.5f, 0), Quaternion.identity);
+                    break;
+                case 2:
+                    Instantiate(bulletPrefab, transform.position + new Vector3(-0.5f, 0.5f, 0), Quaternion.identity);
+                    Instantiate(bulletPrefab, transform.position + new Vector3(0.5f, 0.5f, 0), Quaternion.identity);
+                    break;
+                case 3:
+                    Instantiate(bulletPrefab, transform.position + new Vector3(-0.5f, 0.5f, 0), Quaternion.Euler(0, 0, 45));
+                    Instantiate(bulletPrefab, transform.position + new Vector3(0, 0.5f, 0), Quaternion.identity);
+                    Instantiate(bulletPrefab, transform.position + new Vector3(0.5f, 0.5f, 0), Quaternion.Euler(0, 0, -45));
+                    break;
+            }
         }
-    }
+
+        }
     void Movement()
     {
         //Read the input from the player
@@ -80,7 +179,7 @@ public class PlayerController : MonoBehaviour
 
         // NEW: Clamp vertical movement to bottom half only
         float minY = -3.5f; // bottom
-        float maxY = 0f;                 // middle
+        float maxY = 5.5f;                 // middle
 
 
 
