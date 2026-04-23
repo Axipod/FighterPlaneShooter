@@ -13,7 +13,8 @@ public class EnemyTwo : MonoBehaviour
     void Start()
     {
         //Random position spawner
-        startPos = transform.position; 
+        startPos = transform.position;
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
     void Update()
     {
@@ -33,6 +34,7 @@ public class EnemyTwo : MonoBehaviour
         {
             Destroy(WhatDidIHit.gameObject);
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            gameManager.AddScore(3);
             Destroy(this.gameObject);
 
         }

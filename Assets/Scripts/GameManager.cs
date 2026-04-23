@@ -14,7 +14,8 @@ public class GameManager : MonoBehaviour
     public GameObject enemyTwoPrefab;
     public GameObject gameOverMenu;
     public GameObject powerupPrefab;
-    
+    public GameObject coinPrefab; 
+
 
     public AudioClip powerUpSound;
     public AudioClip powerDownSound;
@@ -31,6 +32,7 @@ public class GameManager : MonoBehaviour
     private bool gameOver;
     public TextMeshProUGUI powerupText;
     public TextMeshProUGUI livesText;
+    public TextMeshProUGUI scoreText;
 
     // Start is called before the first frame update
     void Start()
@@ -39,7 +41,7 @@ public class GameManager : MonoBehaviour
         verticalScreenSize = 6.5f;
         gameOver = false;
         score = 0;
-
+        StartCoroutine(SpawnCoin());
 
 
 
@@ -59,6 +61,28 @@ public class GameManager : MonoBehaviour
         }
 
     }
+
+    void CreateCoin()
+    {
+        Instantiate(coinPrefab,
+            new Vector3(
+                Random.Range(-horizontalScreenSize * .8f, horizontalScreenSize * .8f),
+                Random.Range(-verticalScreenSize * .8f, verticalScreenSize * .8f),
+                0),
+            Quaternion.identity);
+    }
+
+    IEnumerator SpawnCoin()
+    {
+        float spawnTime = Random.Range(2, 4);
+        yield return new WaitForSeconds(spawnTime);
+
+        CreateCoin();
+
+        StartCoroutine(SpawnCoin());
+    }
+
+
     void CreateEnemyOne()
     {
         Instantiate(enemyOnePrefab, new Vector3(Random.Range(-horizontalScreenSize, horizontalScreenSize) * .9f, verticalScreenSize, 0), Quaternion.identity);
@@ -128,6 +152,11 @@ public class GameManager : MonoBehaviour
                 audioPlayer.GetComponent<AudioSource>().PlayOneShot(powerDownSound);
                 break;
         }
+    }
+    public void AddScore(int earnedScore)
+    {
+        score = score + earnedScore;
+        scoreText.text = "Score: " + score;
     }
     public void GameOver()
     {

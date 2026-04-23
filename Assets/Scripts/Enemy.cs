@@ -9,7 +9,7 @@ public class Enemy : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     private void OnTriggerEnter2D(Collider2D WhatDidIHit)
@@ -24,6 +24,7 @@ public class Enemy : MonoBehaviour
         else if (WhatDidIHit.tag == "Weapons") {
             Destroy(WhatDidIHit.gameObject);
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            gameManager.AddScore(1);
             Destroy(this.gameObject);
         
         }
